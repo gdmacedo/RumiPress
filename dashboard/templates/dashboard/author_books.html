@@ -1,0 +1,39 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+<h1 class="mb-3">Books by {{ view.kwargs.authors }} ({{ page_obj.paginator.count }})</h1>
+    {% for book in books %}
+      <article class="content-section">
+        <div class="media">
+          <img class="rounded-circle account-img" src="{{ book.image.url }}">
+          <div class="media-body">
+            <h2><a class="article-title" href="{% url 'book-detail' book.id %}">{{ book.title }}</a></h2>
+            {% if book.subtitle %}
+              <p class="article-content">{{ book.subtitle }}</p>
+            {% endif %}
+          </div>
+        </div>
+        <a class="mr-2" href="{% url 'author-books' book.authors %}">{{ book.authors }}</a>
+        <small class="text-muted">{{ book.published_date }}</small>
+        <small class="text-muted">{{ book.publisher }}</small>
+      </article>
+    {% endfor %}
+    {% if is_paginated %}
+
+      {% if page_obj.has_previous %}
+        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+      {% endif %}
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+        {% elif num > page_obj.number|add:'-5' and num < page_obj.number|add:'5' %}
+          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+      {% endif %}
+      <a class="btn btn-secondary mb-4">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a>
+    {% endif %}
+{% endblock content %}
